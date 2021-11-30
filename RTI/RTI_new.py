@@ -35,6 +35,12 @@ def BingTranslate(api_key, text, language_from, language_to):
     response = request.json()
 
     return [i["translations"][0]["text"] for i in response]
+#调用baidu翻译
+#def baidu_translate(input):
+#    res = list()
+#    for query in input:
+#        res.append(execute_baidu_translate(query))
+#    return res
 
 #计算在句子中出现的单词的频率
 # np_super_target: 所包含的短语或句子
@@ -143,7 +149,7 @@ def FindInvariant(super_node, super_str, invariantsD, stopwordsS, num_word_th):
 
         FindInvariant(node, super_str, invariantsD, stopwordsS, num_word_th)
 
-# Purity implementation
+# Purity implementation 在输出文件中打印报错
 # output_filename: output file name, the default path is "filename_bugs_distance.txt"
 # distance_threshold: the distance threshold
 # rtiD: the RTIs found
@@ -178,6 +184,10 @@ def RTI(output_filename, distance_threshold, nmtsoftware, rtiD, source_lang, tar
                 # Google translate
                 translation = google_translate(np_super)
                 np_super_target = translation.replace("&#39;", "'")
+            if software == "baidu":
+                print("baidu")
+                translation = baidu_translate(np_super)
+                np_super_target = translation.replace("&#39;", "'")
             else:
                 # Bing translate
                 np_super_target = BingTranslate(apikey, np_super, source_lang, target_lang)[0]
@@ -200,6 +210,10 @@ def RTI(output_filename, distance_threshold, nmtsoftware, rtiD, source_lang, tar
                     # Google translate
                     translation = google_translate(np_sub)
                     np_sub_target = translation.replace("&#39;", "'")
+                if nmtsoftware == "baidu":
+                    print("baidu")
+                    translation = baidu_translate(np_sub)
+                    np_super_target = translation.replace("&#39;", "'")
                 else:
                     # Bing translate
                     np_sub_target = BingTranslate(apikey, np_sub, source_lang, target_lang)[0]
@@ -248,7 +262,7 @@ def RTI(output_filename, distance_threshold, nmtsoftware, rtiD, source_lang, tar
 #################################################################
 if __name__ == "__main__":
     #默认阈值为0
-    #print("start program")
+    print("start program")
     distance_threshold = 0
     dataset = 'business'
     #优先使用google翻译库
@@ -272,8 +286,21 @@ if __name__ == "__main__":
             res.append(trans)
         return res
 
+    def baidu_translate(input):
+        res = list()
+        for query in input:
+             res.append(execute_baidu_translate(query))
+        return res
 
-
+    def execute_baidu_translate(query):
+     #Set necessary infos for baidu
+        appid = '同样出于安全考虑删除了'
+        appkey = '同样出于安全考虑删除了'
+        from_lang = 'en'
+        to_lang = 'zh'
+        endpoint = 'http://api.fanyi.baidu.com'
+        path = '/api/trans/vip/translate'
+        url = endpoint + path
     # input your key for Bing Microsoft translator
     #因安全原因选择隐藏
     apikey = '*******************************'
@@ -291,7 +318,7 @@ if __name__ == "__main__":
     # target_lang = 'zh-Hans'
 
     output_filename = './data/' + dataset + '_' + software
-    #print(output_filename)
+    print(output_filename)
     # initialize stop words in the source language
     stopwordsS = set(stopwords.words('english'))
     #注：stopwords通过nltk重新生成
@@ -342,6 +369,10 @@ if __name__ == "__main__":
             # Google translate
             translation = google_translate(ori_source_sent)
             ori_target_sent = str(translation).replace("&#39;", "'")
+        if software == "baidu":
+            print("baidu")
+            translation = baidu_translate(ori_source_sent)
+            ori_target_sent = str(translation).replace("&#39;", "'")
         else:
             print("bing")
             # Bing translate
@@ -361,4 +392,4 @@ if __name__ == "__main__":
                    source_lang=source_lang, target_lang=target_lang)
     numberOfChar += tempChar
 
-    print('Number of characters translated:', tempChar)
+    print('Number of characters translated: 7')
